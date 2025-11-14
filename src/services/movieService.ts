@@ -1,5 +1,4 @@
 import axios from "axios";
-import type { AxiosResponse } from "axios";
 import type { Movie } from "../types/movie";
 
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -31,7 +30,7 @@ export async function fetchMovies(
     },
   };
 
-  const response: AxiosResponse<MoviesResponse> = await axios.get(url, config);
+  const response = await axios.get<MoviesResponse>(url, config);
 
   response.data.results = response.data.results.filter(
     (movie) => movie.poster_path && movie.backdrop_path
