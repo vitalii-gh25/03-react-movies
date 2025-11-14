@@ -1,27 +1,59 @@
 // import css from "./App.module.css";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import SearchBar from "../SearchBar/SearchBar";
+import MovieGrid from "../MovieGrid/MovieGrid";
+import MovieModal from "../MovieModal/MovieModal";
+import Loader from "../Loader/Loader";
+import ErrorMessage from "../ErrorMessage/ErrorMessage";
+import { fetchMovies } from "../../services/movieService";
+import type { Movie } from "../../types/movie";
+import toast from "react-hot-toast";
 
 export default function App() {
-  const [first, setFirst] = useState(0);
-  const [second, setSecond] = useState(0);
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
 
-  useEffect(() => {
-    console.log("First updated:", first);
-  }, [first]);
+  const handleSearch = async (query: string) => {
+    setMovies([]);
+    setError(false);
+    setLoading(true);
 
-  useEffect(() => {
-    console.log("Second updated:", second);
-  }, [second]);
+    try {
+      const data = await fetchMovies({ query });
 
-  useEffect(() => {
-    console.log("First or second updated:", first + second);
-  }, [first, second]);
+      console.log(data.results);
+
+      if (data.results.length === 0) {
+        toast.error("No movies found for your request.");
+      }
+
+      setMovies(data.results);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <button onClick={() => setFirst(first + 1)}>First: {first}</button>
-      <button onClick={() => setSecond(second + 1)}>Second: {second}</button>
+      <SearchBar onSubmit={handleSearch} />
+
+      {loading && <Loader />}
+      {error && <ErrorMessage />}
+      {!loading && !error && movies.length > 0 && (
+        <MovieGrid movies={movies} onSelect={setSelectedMovie} />
+      )}
+
+      {selectedMovie && (
+        <MovieModal
+          movie={selectedMovie}
+          onClose={() => setSelectedMovie(null)}
+        />
+      )}
     </>
   );
 }
