@@ -1,4 +1,4 @@
-// import css from "./App.module.css";
+import styles from "./App.module.css";
 
 import { useState } from "react";
 import SearchBar from "../SearchBar/SearchBar";
@@ -39,7 +39,7 @@ export default function App() {
   };
 
   return (
-    <>
+    <div className={styles.app}>
       <SearchBar onSubmit={handleSearch} />
 
       {loading && <Loader />}
@@ -54,6 +54,6 @@ export default function App() {
           onClose={() => setSelectedMovie(null)}
         />
       )}
-    </>
+    </div>
   );
 }
