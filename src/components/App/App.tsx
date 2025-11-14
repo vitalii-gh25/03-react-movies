@@ -22,7 +22,7 @@ export default function App() {
     setLoading(true);
 
     try {
-      const data = await fetchMovies({ query });
+      const data = await fetchMovies(query);
 
       console.log(data.results);
 
